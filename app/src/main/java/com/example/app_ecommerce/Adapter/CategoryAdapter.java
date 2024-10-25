@@ -15,6 +15,7 @@ import com.example.app_ecommerce.Activity.DetailActivity;
 import com.example.app_ecommerce.Interface.ItemClickListener;
 import com.example.app_ecommerce.Model.ProductModel;
 import com.example.app_ecommerce.R;
+import com.example.app_ecommerce.utils.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
@@ -63,8 +64,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
             // Nếu ảnh tồn tại trong drawable, hiển thị nó
             holder.item_image.setImageResource(imageResourceId);
         } else {
-            // Nếu không, lấy ảnh từ internet bằng Picasso
-            Picasso.get().load(productModel.getImage()).into(holder.item_image);
+            if(productModel.getImage().contains("http")){
+                Picasso.get().load(productModel.getImage()).into(holder.item_image);
+            } else {
+                String img = Utils.BASE_URL+"images/" + productModel.getImage();
+                Picasso.get().load(img).into(holder.item_image);
+            }
         }
 
         holder.setItemClickListener(new ItemClickListener() {

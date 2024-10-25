@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.app_ecommerce.Model.Item;
 import com.example.app_ecommerce.R;
+import com.example.app_ecommerce.utils.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -43,8 +44,12 @@ public class InvoiceDetailAdapter extends RecyclerView.Adapter<InvoiceDetailAdap
             // Nếu ảnh tồn tại trong drawable, hiển thị nó
             holder.img_picCart.setImageResource(imageResourceId);
         } else {
-            // Nếu không, lấy ảnh từ internet bằng Picasso
-            Picasso.get().load(item.getImage()).into(holder.img_picCart);
+            if(item.getImage().contains("http")){
+                Picasso.get().load(item.getImage()).into(holder.img_picCart);
+            } else {
+                String img = Utils.BASE_URL+"images/" + item.getImage();
+                Picasso.get().load(img).into(holder.img_picCart);
+            }
         }
 
     }
