@@ -4,6 +4,15 @@ public class MessageModel {
     private boolean success;
     private String message;
     private String name;
+    private int invoice_id;
+
+    public int getInvoice_id() {
+        return invoice_id;
+    }
+
+    public void setInvoice_id(int invoice_id) {
+        this.invoice_id = invoice_id;
+    }
 
     public String getName() {
         return name;

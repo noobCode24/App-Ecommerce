@@ -37,6 +37,7 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.firebase.auth
     implementation libs.firebase.messaging
+    implementation fileTree(dir: 'C:\\zalopay', include: ['*.aar', '*.jar'], exclude: [])
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
@@ -59,4 +60,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.11.0'
 //    Lottie
     implementation 'com.airbnb.android:lottie:6.5.2'
+//    zalopay
+    implementation("com.squareup.okhttp3:okhttp:4.6.0")
+    implementation("commons-codec:commons-codec:1.14")
 }

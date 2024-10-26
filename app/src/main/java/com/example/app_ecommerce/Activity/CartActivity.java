@@ -10,6 +10,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +30,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.app_ecommerce.Adapter.CartAdapter;
+import com.example.app_ecommerce.Model.CreateOrder;
+import com.example.app_ecommerce.Model.MessageModel;
 import com.example.app_ecommerce.Model.ShoppingCart;
 import com.example.app_ecommerce.R;
 import com.example.app_ecommerce.Retrofit.ApiEcommerce;
@@ -36,11 +39,17 @@ import com.example.app_ecommerce.Retrofit.RetrofitClient;
 import com.example.app_ecommerce.utils.Utils;
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import java.text.DecimalFormat;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import vn.zalopay.sdk.Environment;
+import vn.zalopay.sdk.ZaloPayError;
+import vn.zalopay.sdk.ZaloPaySDK;
+import vn.zalopay.sdk.listeners.PayOrderListener;
 
 public class CartActivity extends AppCompatActivity {
     private ImageView btnBack, btntoAddress, btntopay;
@@ -52,7 +61,9 @@ public class CartActivity extends AppCompatActivity {
     private ApiEcommerce apiEcommerce;
     private ConstraintLayout layoutline1, layoutline2;
     double total;
-    private String address;
+    private MessageModel messageModel;
+    int id_invoice;
+    private String address, payment;
     private int totalQuantity = 0;
 
     @Override
@@ -65,6 +76,9 @@ public class CartActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        ZaloPaySDK.init(2553, Environment.SANDBOX);
 
         initView();
         initControl();
@@ -124,20 +138,100 @@ public class CartActivity extends AppCompatActivity {
             Intent intent = new Intent(CartActivity.this, AddressActivity.class);
             startActivityForResult(intent, 1);  // Sử dụng startActivityForResult
         });
+        btntopay.setOnClickListener(v -> {
+            Intent intent = new Intent(CartActivity.this, PaymentMethod.class);
+            startActivityForResult(intent, 2);
+        });
     }
 
     private void checkBtnOrder() {
         btnOrder.setOnClickListener(v -> {
             address = txtAddress.getText().toString().trim();
+            payment = txtCash.getText().toString().trim();
             if (address.isEmpty() || address.equals("Address")) {
                 // Hiển thị thông báo nếu chưa nhập địa chỉ
                 Toast.makeText(CartActivity.this, "Vui lòng nhập địa chỉ", Toast.LENGTH_SHORT).show();
             } else {
-                // Tiếp tục tiến hành đặt hàng
-                // Code để xử lý đặt hàng ở đây
-                proceedToOrder();
+                if(payment.isEmpty() || payment.equals("Cash")) {
+                    Toast.makeText(CartActivity.this, "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
+                } else if (payment.equals("Cash on Delivery")){
+                    proceedToOrder();
+                } else if (payment.equals("Momo")){
+                    //thuc hien o day
+                } else if (payment.equals("ZaloPay")){
+                    //thuc hien o day
+                    proceedToOrderWithZaloPay();
+                }
             }
         });
+    }
+
+    private void proceedToOrderWithZaloPay() {
+        String str_email = Utils.user_current.getEmail();
+        String str_mobile = Utils.user_current.getMobile();
+        int id = Utils.user_current.getUser_id();
+        compositeDisposable.add(apiEcommerce.createOrder(str_email, str_mobile, address, totalQuantity, total, id, new Gson().toJson(Utils.ShoppingCartList))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        messageModel -> {
+                            Toast.makeText(getApplicationContext(),"Thanh toan don hang thanh cong", Toast.LENGTH_SHORT).show();
+                            Utils.ShoppingCartList.clear(); // Xóa tất cả sản phẩm trong giỏ hàng
+                            cartAdapter.notifyDataSetChanged(); // Cập nhật lại RecyclerView
+                            id_invoice = messageModel.getInvoice_id();
+                            requestZalo();
+                        },
+                        throwable -> {
+                            Log.e("API Error", "Error: " + throwable.getMessage());
+                            Toast.makeText(getApplicationContext(),"Thanh toan don hang ko thanh cong", Toast.LENGTH_SHORT).show();
+                        }
+                ));
+    }
+
+    private void requestZalo() {
+        CreateOrder orderApi = new CreateOrder();
+        try {
+            JSONObject data = orderApi.createOrder("100000");
+            String code = data.getString("return_code");
+            if (code.equals("1")) {
+                String token = data.getString("zp_trans_token");
+
+                ZaloPaySDK.getInstance().payOrder(CartActivity.this, token, "demozpdk://app", new PayOrderListener() {
+                    @Override
+                    public void onPaymentSucceeded(String s, String s1, String s2) {
+                        compositeDisposable.add(apiEcommerce.updateZalo(id_invoice, token)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(
+                                        messageModel -> {
+                                            if(messageModel.isSuccess()){
+                                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+                                        },
+                                        throwable -> {
+                                            Toast.makeText(getApplicationContext(),throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                ));
+
+                    }
+
+                    @Override
+                    public void onPaymentCanceled(String s, String s1) {
+
+                    }
+
+                    @Override
+                    public void onPaymentError(ZaloPayError zaloPayError, String s, String s1) {
+
+                    }
+                });
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void proceedToOrder() {
@@ -149,7 +243,7 @@ public class CartActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        userModel -> {
+                        messageModel -> {
                             Toast.makeText(getApplicationContext(),"Thanh toan don hang thanh cong", Toast.LENGTH_SHORT).show();
                             Utils.ShoppingCartList.clear(); // Xóa tất cả sản phẩm trong giỏ hàng
                             cartAdapter.notifyDataSetChanged(); // Cập nhật lại RecyclerView
@@ -276,9 +370,13 @@ public class CartActivity extends AppCompatActivity {
             // Nhận địa chỉ từ AddressActivity
             String address = data.getStringExtra("address");
 
-            // Hiển thị địa chỉ và thay đổi style thành bold
             txtAddress.setText(address);
             txtAddress.setTextAppearance(R.style.textStyleBold);  // Thay đổi kiểu chữ
+        }
+        if (requestCode == 2 && resultCode == RESULT_OK) {
+            String paymentMethod = data.getStringExtra("paymentMethod");
+            txtCash.setText(paymentMethod);
+            txtCash.setTextAppearance(R.style.textStyleBold);
         }
     }
 
@@ -286,5 +384,11 @@ public class CartActivity extends AppCompatActivity {
     protected void onDestroy() {
         compositeDisposable.clear();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        ZaloPaySDK.getInstance().onResult(intent);
     }
 }
