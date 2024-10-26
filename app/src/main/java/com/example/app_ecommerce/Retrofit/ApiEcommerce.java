@@ -45,6 +45,13 @@ public interface ApiEcommerce {
             @Field("token") String token
     );
 
+    @POST("updateZalo.php")
+    @FormUrlEncoded
+    Observable<MessageModel> updateZalo(
+            @Field("id") int id,
+            @Field("token") String token
+    );
+
     @POST("sendEmail.php")
     @FormUrlEncoded
     Observable<UserModel> resetPass(
@@ -53,7 +60,7 @@ public interface ApiEcommerce {
 
     @POST("invoice.php")
     @FormUrlEncoded
-    Observable<UserModel> createOrder(
+    Observable<MessageModel> createOrder(
             @Field("email") String email,
             @Field("mobile") String mobile,
             @Field("address") String address,

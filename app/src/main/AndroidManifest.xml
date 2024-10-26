@@ -18,8 +18,11 @@
         android:theme="@style/Theme.App_Ecommerce"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.PaymentMethod"
+            android:exported="false" />
+        <activity
             android:name=".Activity.SplashActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,8 +37,7 @@
             android:exported="false" />
         <activity
             android:name=".Activity.LoginActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".Activity.ResetPassActivity"
             android:exported="false" />
@@ -50,12 +52,22 @@
             android:exported="false" />
         <activity
             android:name=".Activity.DetailActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".Activity.MainActivity"
-            android:exported="true" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="demozpdk"
+                    android:host="app" />
+            </intent-filter>
+        </activity>
 
-        <service android:name=".Service.FirebaseMessageReceiver"
+        <service
+            android:name=".Service.FirebaseMessageReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
