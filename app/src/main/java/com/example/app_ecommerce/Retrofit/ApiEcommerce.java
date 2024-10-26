@@ -1,6 +1,7 @@
 package com.example.app_ecommerce.Retrofit;
 
 import com.example.app_ecommerce.Model.InvoiceModel;
+import com.example.app_ecommerce.Model.MessageModel;
 import com.example.app_ecommerce.Model.UserModel;
 import com.example.app_ecommerce.Model.getProductModel;
 
@@ -26,7 +27,8 @@ public interface ApiEcommerce {
             @Field("user_name") String user_name,
             @Field("email") String email,
             @Field("pass") String pass,
-            @Field("mobile") String mobile
+            @Field("mobile") String mobile,
+            @Field("uid") String uid
     );
 
     @POST("login.php")
@@ -34,6 +36,13 @@ public interface ApiEcommerce {
     Observable<UserModel> login(
             @Field("email") String email,
             @Field("pass") String pass
+    );
+
+    @POST("updateToken.php")
+    @FormUrlEncoded
+    Observable<MessageModel> updateToken(
+            @Field("user_id") String user_id,
+            @Field("token") String token
     );
 
     @POST("sendEmail.php")

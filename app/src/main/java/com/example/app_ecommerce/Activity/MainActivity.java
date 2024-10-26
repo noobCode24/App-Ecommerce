@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,6 +31,9 @@ import com.example.app_ecommerce.R;
 import com.example.app_ecommerce.Retrofit.ApiEcommerce;
 import com.example.app_ecommerce.Retrofit.RetrofitClient;
 import com.example.app_ecommerce.utils.Utils;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
             User user = Paper.book().read("user");
             Utils.user_current = user;
         }
+        getToken();
         Anhxa();
         if (isConnected(this)){
             getProducts();
@@ -75,6 +81,28 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(getApplicationContext(), "Không có Internet, vui lòng kết nối!", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void getToken() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnSuccessListener(new OnSuccessListener<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        if (!TextUtils.isEmpty(s)) {
+                            compositeDisposable.add(apiEcommerce.updateToken(String.valueOf(Utils.user_current.getUser_id()), s)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(
+                                            messageModel -> {
+
+                                            },
+                                            throwable -> {
+                                                Log.d("log", throwable.getMessage());
+                                            }
+                                    ));
+                        }
+                    }
+                });
     }
 
     private void initControl() {
@@ -103,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
             Paper.book().delete("user");
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
+            FirebaseAuth.getInstance().signOut();
             finish();
         });
     }
