@@ -103,10 +103,10 @@ public class DetailActivity extends AppCompatActivity {
                     img_dialog.setImageResource(imageResourceId);
                 } else {
                     if(productModel.getImage().contains("http")){
-                        Picasso.get().load(productModel.getImage()).into(img_pic);
+                        Picasso.get().load(productModel.getImage()).into(img_dialog);
                     } else {
                         String img = Utils.BASE_URL+"images/" + productModel.getImage();
-                        Picasso.get().load(img).into(img_pic);
+                        Picasso.get().load(img).into(img_dialog);
                     }
                 }
 
@@ -177,6 +177,7 @@ public class DetailActivity extends AppCompatActivity {
             shoppingCart.setQuantity(quantity);
             shoppingCart.setProduct_id(productModel.getProduct_id());
             shoppingCart.setProduct_name(productModel.getProduct_name());
+
             shoppingCart.setImage(productModel.getImage());
             Utils.ShoppingCartList.add(shoppingCart);
 
@@ -213,8 +214,12 @@ public class DetailActivity extends AppCompatActivity {
             // Nếu có ảnh trong drawable, hiển thị nó
             img_pic.setImageResource(imageResourceId);
         } else {
-            // Nếu không, lấy ảnh từ internet bằng Picasso
-            Picasso.get().load(productModel.getImage()).into(img_pic);
+            if(productModel.getImage().contains("http")){
+                Picasso.get().load(productModel.getImage()).into(img_pic);
+            } else {
+                String img = Utils.BASE_URL+"images/" + productModel.getImage();
+                Picasso.get().load(img).into(img_pic);
+            }
         }
     }
 
