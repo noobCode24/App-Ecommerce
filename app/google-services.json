@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "28404367400",
+    "project_id": "appecommerce-6cd82",
+    "storage_bucket": "appecommerce-6cd82.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28404367400:android:f9d3a95402da432abc351d",
+        "android_client_info": {
+          "package_name": "com.example.app_ecommerce"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "28404367400-bl9c0trv1aqa4vel4u834unnkqatnglc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDspgnlZe-5P4fFYGxSdi60lEEy9YnGVCQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "28404367400-bl9c0trv1aqa4vel4u834unnkqatnglc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28404367400:android:28f9ad795c170ad1bc351d",
+        "android_client_info": {
+          "package_name": "com.manager.app_ecommerce"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "28404367400-tcru2cs1v4v7f65gf50cvogi4dp14l3k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.manager.app_ecommerce",
+            "certificate_hash": "1822cbf9396de2577a754429afe3a0790962dd73"
+          }
+        },
+        {
+          "client_id": "28404367400-bl9c0trv1aqa4vel4u834unnkqatnglc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDspgnlZe-5P4fFYGxSdi60lEEy9YnGVCQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "28404367400-bl9c0trv1aqa4vel4u834unnkqatnglc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
