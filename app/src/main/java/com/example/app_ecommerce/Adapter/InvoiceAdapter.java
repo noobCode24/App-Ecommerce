@@ -1,6 +1,9 @@
 package com.example.app_ecommerce.Adapter;
 
 import android.content.Context;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +38,15 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.MyViewHo
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Invoice invoice = listInvoice.get(position);
-        holder.idInvoice.setText("Đơn hàng: " + invoice.getId());
+        holder.idInvoice.setText("Mã đơn hàng:# " + invoice.getId());
+
+        String addressText = "Địa chỉ: " + invoice.getAddress();
+        SpannableString spannableAddress = new SpannableString(addressText);
+        spannableAddress.setSpan(new ForegroundColorSpan(context.getResources().getColor(R.color.black)),
+                8, addressText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        holder.address_invoice.setText(spannableAddress);
+
+        holder.idStatusInvoice.setText(statusInvoice(invoice.getStatus()));
         LinearLayoutManager layoutManager = new LinearLayoutManager(
                 holder.recyclerview_Detail.getContext(),
                 LinearLayoutManager.VERTICAL,
@@ -49,18 +60,42 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.MyViewHo
         holder.recyclerview_Detail.setRecycledViewPool(viewPool);
     }
 
+    private String statusInvoice(int status){
+        String result = "";
+        switch (status){
+            case 0:
+                result = "Chờ xác nhận";
+                break;
+            case 1:
+                result = "Đã xác nhận";
+                break;
+            case 2:
+                result = "Đang giao hàng";
+                break;
+            case 3:
+                result = "Đã giao hàng";
+                break;
+            case 4:
+                result = "Đã hủy";
+                break;
+        }
+        return result;
+    }
+
     @Override
     public int getItemCount() {
         return listInvoice.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView idInvoice;
+        TextView idInvoice, address_invoice, idStatusInvoice;
         RecyclerView recyclerview_Detail;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             idInvoice = itemView.findViewById(R.id.idInvoice);
             recyclerview_Detail = itemView.findViewById(R.id.recyclerview_Detail);
+            address_invoice = itemView.findViewById(R.id.address_invoice);
+            idStatusInvoice = itemView.findViewById(R.id.idStatus);
         }
     }
 

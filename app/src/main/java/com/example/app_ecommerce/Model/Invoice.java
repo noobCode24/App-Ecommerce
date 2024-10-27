@@ -8,6 +8,7 @@ public class Invoice {
     private String address;
     private String mobile;
     private double total_amount;
+    private int status;
     private List<Item> item;
 
     public int getId() {
@@ -16,6 +17,14 @@ public class Invoice {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public int getUsers_id() {

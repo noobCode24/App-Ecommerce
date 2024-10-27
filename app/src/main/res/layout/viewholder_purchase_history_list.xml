@@ -18,15 +18,44 @@
             android:orientation="vertical"
             android:layout_marginBottom="7dp">
 
-            <TextView
-                android:id="@+id/idInvoice"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="7dp">
+
+                <TextView
+                    android:id="@+id/idInvoice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:layout_weight="1"
+                    android:text="Mã đơn hàng:# 123"
+                    android:textColor="@color/red"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/idStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:padding="5dp"
+                    android:layout_weight="1"
+                    android:text="Trạng thái đơn hàng"
+                    android:textColor="@color/red"
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/address_invoice"
                 android:padding="5dp"
-                android:text="Đơn hàng: 123"
+                android:textSize="15dp"
+                android:text="Địa chỉ:"
                 android:textColor="@color/red"
-                android:textSize="16dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerview_Detail"
