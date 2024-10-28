@@ -14,6 +14,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
+    // cau hinh retrofit
     private static Retrofit instance;
     public static Retrofit getInstance(String baseUrl) {
         if (instance == null) {

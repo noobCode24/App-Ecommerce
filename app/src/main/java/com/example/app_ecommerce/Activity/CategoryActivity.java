@@ -101,7 +101,6 @@ public class CategoryActivity extends AppCompatActivity {
                                     hindAndShowRV(true);
                                 } else {
                                     hindAndShowRV(false);
-                                    Toast.makeText(this, "Không có sản phẩm nào.", Toast.LENGTH_LONG).show();
                                 }
                             },
                             throwable -> {

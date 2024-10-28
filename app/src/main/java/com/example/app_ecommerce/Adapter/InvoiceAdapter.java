@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.app_ecommerce.Interface.ItemClickDeleteListener;
 import com.example.app_ecommerce.Model.Invoice;
 import com.example.app_ecommerce.R;
 
@@ -22,6 +23,7 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.MyViewHo
     private List<Invoice> listInvoice;
     private Context context;
     private RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
+    private ItemClickDeleteListener itemClickDeleteListener;
 
     public InvoiceAdapter(Context context, List<Invoice> listInvoice) {
         this.context = context;

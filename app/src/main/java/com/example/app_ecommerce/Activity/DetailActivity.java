@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
@@ -132,8 +133,15 @@ public class DetailActivity extends AppCompatActivity {
                 view.findViewById(R.id.plusCartBtn).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        int stockQuantity = productModel.getStock_quantity();
                         int currentQuantity = Integer.parseInt(numberItemTxt.getText().toString());
-                        numberItemTxt.setText(String.valueOf(currentQuantity + 1));
+
+                        if (currentQuantity < stockQuantity) {
+                            numberItemTxt.setText(String.valueOf(currentQuantity + 1));
+                        } else {
+                            // Có thể hiển thị một thông báo rằng hàng tồn kho không đủ
+                            Toast.makeText(DetailActivity.this, "Hàng tồn kho không đủ!", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
@@ -155,21 +163,41 @@ public class DetailActivity extends AppCompatActivity {
     private void addToCart() {
         int quantity = Integer.parseInt(numberItemTxt.getText().toString());
         boolean isProductInCart = false;
+        int currentProductQuantityInCart = 0; // Số lượng hiện có của sản phẩm trong giỏ hàng
 
         // Kiểm tra sản phẩm đã tồn tại trong giỏ hàng chưa
         for (ShoppingCart cartItem : Utils.ShoppingCartList) {
             if (cartItem.getProduct_id() == productModel.getProduct_id()) {
                 // Nếu sản phẩm đã tồn tại trong giỏ hàng, chỉ tăng số lượng sản phẩm đó
-                cartItem.setQuantity(cartItem.getQuantity() + quantity);
-                long newPrice = (long) (productModel.getPrice()) * cartItem.getQuantity();
-                cartItem.setPrice(newPrice);
+                //cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                //long newPrice = (long) (productModel.getPrice()) * cartItem.getQuantity();
+                //cartItem.setPrice(newPrice);
+                currentProductQuantityInCart = cartItem.getQuantity();
                 isProductInCart = true;
                 break;
             }
         }
 
-        // Nếu sản phẩm chưa có trong giỏ hàng, thêm sản phẩm mới
-        if (!isProductInCart) {
+        int maxQuantityToAdd = productModel.getStock_quantity() - currentProductQuantityInCart;
+
+        if (isProductInCart) {
+            // Kiểm tra nếu số lượng muốn thêm không vượt quá số lượng tối đa có thể thêm
+            if (quantity <= maxQuantityToAdd) {
+                // Tăng số lượng cho sản phẩm trong giỏ hàng
+                for (ShoppingCart cartItem : Utils.ShoppingCartList) {
+                    if (cartItem.getProduct_id() == productModel.getProduct_id()) {
+                        cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                        long newPrice = (long) (productModel.getPrice()) * cartItem.getQuantity();
+                        cartItem.setPrice(newPrice);
+                        break;
+                    }
+                }
+            } else {
+                // Có thể hiển thị một thông báo rằng không thể thêm số lượng vượt quá giới hạn
+                Toast.makeText(this, "Không thể thêm số lượng vượt quá kho!", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // Nếu sản phẩm chưa có trong giỏ hàng, thêm sản phẩm mới
             long price = (long) (productModel.getPrice()) * quantity;
             ShoppingCart shoppingCart = new ShoppingCart();
             shoppingCart.setOriginalPrice(productModel.getPrice());
@@ -184,6 +212,12 @@ public class DetailActivity extends AppCompatActivity {
             // Chỉ khi có sản phẩm mới được thêm, số lượng sản phẩm khác nhau tăng lên
             int productCount = Utils.ShoppingCartList.size(); // Đếm số sản phẩm khác nhau
             tvNotificationCountShopping.setText(String.valueOf(productCount));
+        }
+
+        if (currentProductQuantityInCart + quantity > productModel.getStock_quantity()) {
+            numberItemTxt.setText("0");
+            plusCartBtn.setEnabled(false); // Ngăn không cho thay đổi
+            Toast.makeText(this, "Số lượng tối đa đã đạt. Không thể thêm nữa.", Toast.LENGTH_SHORT).show();
         }
     }
 
