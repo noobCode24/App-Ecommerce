@@ -28,9 +28,9 @@ public class RetrofitClient {
                     .setLenient() // Cho phép JSON bị lỗi
                     .create();
             instance = new Retrofit.Builder()
-                    .baseUrl(baseUrl)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+                    .baseUrl(baseUrl) //Đặt URL cơ sở của server mà Retrofit sẽ gửi yêu cầu đến.
+                    .addConverterFactory(GsonConverterFactory.create(gson)) // giúp Retrofit tự động chuyển đổi dữ liệu JSON từ server thành đối tượng Java
+                    .addCallAdapterFactory(RxJava3CallAdapterFactory.create()) // Cho phép Retrofit sử dụng RxJava để quản lý các yêu cầu không đồng bộ
                     .client(okHttpClient)
                     .build();
         }

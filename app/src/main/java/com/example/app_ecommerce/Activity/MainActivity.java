@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        // khoi tao va cau hinh retrofit dung de ket noi toi server thong qua api
+        // Sử dụng RetrofitClient để tạo đối tượng ApiEcommerce với các phương thức yêu cầu HTTP đến server.
         apiEcommerce = RetrofitClient.getInstance(Utils.BASE_URL).create(ApiEcommerce.class);
         // xu ly luu tru nguoi dung voi paper, tu dong dang nhap neu du lieu nguoi dung da duoc luu tru
         Paper.init(this);
@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
     // lay du lieu tu server
     private void getProducts() {
         // gui yeu cau toi server
+        //CategoryActivity sẽ gọi apiEcommerce.getProduct() (một Observable) để gửi yêu cầu GET đến endpoint getProduct.php.
         compositeDisposable.add(apiEcommerce.getProduct() //duoc su dung de quan ly va huy cac observable trong qua trinh yeu cau du lieu voi Rxjava
                 .subscribeOn(Schedulers.io()) // thuc hien thao tac lay du lieu tren luong io
                 .observeOn(AndroidSchedulers.mainThread()) // xu ly tren luong chinh sau khi lay du lieu

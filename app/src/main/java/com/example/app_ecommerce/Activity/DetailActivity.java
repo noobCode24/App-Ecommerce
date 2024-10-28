@@ -203,6 +203,7 @@ public class DetailActivity extends AppCompatActivity {
             shoppingCart.setOriginalPrice(productModel.getPrice());
             shoppingCart.setPrice(price);
             shoppingCart.setQuantity(quantity);
+            shoppingCart.setStock_quantity(productModel.getStock_quantity());
             shoppingCart.setProduct_id(productModel.getProduct_id());
             shoppingCart.setProduct_name(productModel.getProduct_name());
 
@@ -214,7 +215,7 @@ public class DetailActivity extends AppCompatActivity {
             tvNotificationCountShopping.setText(String.valueOf(productCount));
         }
 
-        if (currentProductQuantityInCart + quantity > productModel.getStock_quantity()) {
+        if (currentProductQuantityInCart + quantity >= productModel.getStock_quantity()) {
             numberItemTxt.setText("0");
             plusCartBtn.setEnabled(false); // Ngăn không cho thay đổi
             Toast.makeText(this, "Số lượng tối đa đã đạt. Không thể thêm nữa.", Toast.LENGTH_SHORT).show();
