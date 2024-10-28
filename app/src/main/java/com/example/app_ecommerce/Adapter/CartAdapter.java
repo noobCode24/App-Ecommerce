@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,9 +21,9 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder> {
-    Context context;
-    List<ShoppingCart> CartList;
-    OnCartQuantityChangeListener quantityChangeListener;
+    private Context context;
+    private List<ShoppingCart> CartList;
+    private OnCartQuantityChangeListener quantityChangeListener;
 
     public CartAdapter(Context context, List<ShoppingCart> cartList, OnCartQuantityChangeListener quantityChangeListener) {
         CartList = cartList;
@@ -93,21 +94,27 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder> 
         // Xử lý sự kiện nút tăng số lượng
         holder.plusCartBtn.setOnClickListener(v -> {
             int currentQuantity = shoppingCart.getQuantity();
-            shoppingCart.setQuantity(currentQuantity + 1);
-            holder.numberItemTxt.setText(String.valueOf(shoppingCart.getQuantity()));
+            int stockQuantity = shoppingCart.getStock_quantity();
 
-            // Cập nhật giá sản phẩm
-            double totalEachItem = shoppingCart.getQuantity() * shoppingCart.getOriginalPrice();
-            shoppingCart.setPrice(totalEachItem);
-            holder.txt_totalEachItem.setText(totalEachItem % 1 == 0
-                    ? decimalFormatWithoutDecimal.format(totalEachItem)
-                    : decimalFormatWithDecimal.format(totalEachItem));
+            if (currentQuantity < stockQuantity){
+                shoppingCart.setQuantity(currentQuantity + 1);
+                holder.numberItemTxt.setText(String.valueOf(shoppingCart.getQuantity()));
 
-            // Gọi interface để thông báo sự thay đổi số lượng
-            quantityChangeListener.onQuantityChanged();
+                // Cập nhật giá sản phẩm
+                double totalEachItem = shoppingCart.getQuantity() * shoppingCart.getOriginalPrice();
+                shoppingCart.setPrice(totalEachItem);
+                holder.txt_totalEachItem.setText(totalEachItem % 1 == 0
+                        ? decimalFormatWithoutDecimal.format(totalEachItem)
+                        : decimalFormatWithDecimal.format(totalEachItem));
 
-            // Cập nhật lại chỉ mục hiện tại
-            notifyItemChanged(holder.getAdapterPosition());
+                // Gọi interface để thông báo sự thay đổi số lượng
+                quantityChangeListener.onQuantityChanged();
+
+                // Cập nhật lại chỉ mục hiện tại
+                notifyItemChanged(holder.getAdapterPosition());
+            } else {
+                Toast.makeText(context, "Hàng tồn kho không đủ!", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

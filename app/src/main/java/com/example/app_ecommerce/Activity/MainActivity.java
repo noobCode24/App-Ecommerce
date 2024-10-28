@@ -65,8 +65,9 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        // khoi tao va cau hinh retrofit dung de ket noi toi server thong qua api
         apiEcommerce = RetrofitClient.getInstance(Utils.BASE_URL).create(ApiEcommerce.class);
+        // xu ly luu tru nguoi dung voi paper, tu dong dang nhap neu du lieu nguoi dung da duoc luu tru
         Paper.init(this);
         if(Paper.book().read("user") != null){
             User user = Paper.book().read("user");
@@ -147,16 +148,18 @@ public class MainActivity extends AppCompatActivity {
         updateCartCount(); // Cập nhật số lượng giỏ hàng
     }
 
+    // lay du lieu tu server
     private void getProducts() {
-        compositeDisposable.add(apiEcommerce.getProduct()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        // gui yeu cau toi server
+        compositeDisposable.add(apiEcommerce.getProduct() //duoc su dung de quan ly va huy cac observable trong qua trinh yeu cau du lieu voi Rxjava
+                .subscribeOn(Schedulers.io()) // thuc hien thao tac lay du lieu tren luong io
+                .observeOn(AndroidSchedulers.mainThread()) // xu ly tren luong chinh sau khi lay du lieu
                 .subscribe(
                         getProductModel -> {
                             if(getProductModel.isSuccess()) {
-                                productList = getProductModel.getResult();
-                                productAdapter = new ProductAdapter(getApplicationContext(),productList);
-                                rvPopularProducts.setAdapter(productAdapter);
+                                productList = getProductModel.getResult(); // lay du lieu tu server
+                                productAdapter = new ProductAdapter(getApplicationContext(),productList); // tao adapter
+                                rvPopularProducts.setAdapter(productAdapter); // hien thi danh sach san pham
                             }
                         },
                         throwable -> {

@@ -12,6 +12,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 public interface ApiEcommerce {
+    // endpoint toi server va xu ly du lieu phan hoi bang retrofit
     @GET("getProduct.php")
     Observable<getProductModel> getProduct();
 
@@ -20,6 +21,14 @@ public interface ApiEcommerce {
     Observable<getProductModel> getProductByCategory(
             @Field("loai") int loai
     );
+
+    @POST("updateSoldQuantity.php")
+    @FormUrlEncoded
+    Observable<MessageModel> updateSoldQuantity(
+            @Field("product_id") int productId,
+            @Field("quantity") int quantity
+    );
+
 
     @POST("register.php")
     @FormUrlEncoded

@@ -23,7 +23,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder> {
     private List<ProductModel> productList;
-    private Context context;
+    private Context context; // ngu canh de hien thi giao dien
 
     public ProductAdapter(Context context, List<ProductModel> productList) {
         this.productList = productList;
@@ -33,6 +33,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
     @NonNull
     @Override
     public ProductAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // tạo view holder cho tung thang item
+        // LayoutInflater gan layout viewholder_pop_list vao tung item cua recyclerView
         View item = LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_pop_list, parent, false);
 
         return new MyViewHolder(item);

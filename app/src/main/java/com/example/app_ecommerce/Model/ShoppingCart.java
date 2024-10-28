@@ -5,8 +5,17 @@ public class ShoppingCart {
     private String product_name;
     private double price;
     private double originalPrice;
+    private int stock_quantity;
     private int quantity;
     private String image;
+
+    public int getStock_quantity() {
+        return stock_quantity;
+    }
+
+    public void setStock_quantity(int stock_quantity) {
+        this.stock_quantity = stock_quantity;
+    }
 
     public double getOriginalPrice() {
         return originalPrice;

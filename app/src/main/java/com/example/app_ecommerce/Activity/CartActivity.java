@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.app_ecommerce.Adapter.CartAdapter;
 import com.example.app_ecommerce.Model.CreateOrder;
 import com.example.app_ecommerce.Model.MessageModel;
+import com.example.app_ecommerce.Model.ProductModel;
 import com.example.app_ecommerce.Model.ShoppingCart;
 import com.example.app_ecommerce.R;
 import com.example.app_ecommerce.Retrofit.ApiEcommerce;
@@ -61,7 +62,6 @@ public class CartActivity extends AppCompatActivity {
     private ApiEcommerce apiEcommerce;
     private ConstraintLayout layoutline1, layoutline2;
     double total;
-    private MessageModel messageModel;
     int id_invoice;
     private String address, payment;
     private int totalQuantity = 0;
@@ -85,6 +85,33 @@ public class CartActivity extends AppCompatActivity {
         calculateCart();
         enableSwipeToDelete();
 
+    }
+
+    private void updateSoldQuantity() {
+        for (ShoppingCart item : Utils.ShoppingCartList) {
+            int productId = item.getProduct_id(); // ID sản phẩm
+            int quantitySold = item.getQuantity(); // Số lượng đã bán
+
+            compositeDisposable.add(apiEcommerce.updateSoldQuantity(productId, quantitySold)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            messageModel -> {
+                                if (messageModel.isSuccess()) {
+                                    // Cập nhật thành công
+                                    Log.d("UpdateSoldQuantity", "Cập nhật thành công cho sản phẩm ID: " + productId);
+                                } else {
+                                    // Xử lý lỗi nếu có
+                                    Log.e("UpdateSoldQuantity", "Cập nhật không thành công cho sản phẩm ID: " + productId + ", Lỗi: " + messageModel.getMessage());
+                                }
+                            },
+                            throwable -> {
+                                // Xử lý lỗi khi gọi API
+                                Log.e("UpdateSoldQuantity", "Lỗi khi cập nhật sản phẩm ID: " + productId + ", Lỗi: " + throwable.getMessage());
+                            }
+                    ));
+
+        }
     }
 
     private void calculateCart() {
@@ -128,7 +155,9 @@ public class CartActivity extends AppCompatActivity {
 
         // Cài đặt RecyclerView
         recyclerViewCart.setHasFixedSize(true);
+        //khởi tạo một LayoutManager cho RecyclerView. LinearLayoutManager cho phép hiển thị các mục trong một danh sách theo chiều dọc hoặc chiều ngang
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        //Dòng này thiết lập LayoutManager đã được khởi tạo cho RecyclerView
         recyclerViewCart.setLayoutManager(layoutManager);
         updateCartView();
         checkBtnOrder();
@@ -178,6 +207,7 @@ public class CartActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(),"Thanh toan don hang thanh cong", Toast.LENGTH_SHORT).show();
                             Utils.ShoppingCartList.clear(); // Xóa tất cả sản phẩm trong giỏ hàng
                             cartAdapter.notifyDataSetChanged(); // Cập nhật lại RecyclerView
+
                             id_invoice = messageModel.getInvoice_id();
                             requestZalo();
                         },
@@ -254,6 +284,7 @@ public class CartActivity extends AppCompatActivity {
                         throwable -> {
                             // dang bị lỗi định dạng json nhưng vẫn thêm vô được db
                             Toast.makeText(getApplicationContext(),"Thanh toan don hang thanh cong", Toast.LENGTH_SHORT).show();
+                            updateSoldQuantity();
                             Utils.ShoppingCartList.clear(); // Xóa tất cả sản phẩm trong giỏ hàng
                             cartAdapter.notifyDataSetChanged(); // Cập nhật lại RecyclerView
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
